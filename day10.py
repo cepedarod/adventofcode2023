@@ -363,9 +363,9 @@ trim (expanded_map)
 print_visual(expanded_map)
 #print(f"size: x:{len(expanded_map[0])}, y:{len(expanded_map)}")
 purge(50, 0, expanded_map)
-purge(len(expanded_map[0]- 50), 0)
+purge(len(expanded_map[0])- 50, 0)
 purge(50, len(expanded_map)-1, expanded_map)
-purge(len(expanded_map[0]- 50), len(expanded_map)-1)
+purge(len(expanded_map[0])- 50, len(expanded_map)-1)
 
 
 print_visual(expanded_map)
