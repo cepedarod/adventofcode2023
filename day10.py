@@ -227,15 +227,15 @@ def trim(map):
     for row in map_it:
         if "#" not in row: map.pop(0)
         else:
-            buffer = ["."] * len(row) 
-            map.insert(0, buffer)
+            #buffer = ["."] * len(row) 
+            #map.insert(0, buffer)
             break
 
     for row in reversed(map_it):
         if "#" not in row: map.pop()
         else: 
-            buffer = ["."] * len(row)
-            map.append(buffer)
+            #buffer = ["."] * len(row)
+            #map.append(buffer)
             break
 
     map_it = map.copy()
@@ -262,7 +262,28 @@ def trim(map):
     map_it = map.copy()
     it = 0
     empty = True
+    debug = 0
+    found_edge = False
+    while not found_edge:
+        for row in map:
+            row_r = list(reversed(row))
+            if row_r[it] == '#':
+                found_edge = True 
+                break
+        if not found_edge: it+=1
+
+    i = 0
+    while i < it:
+        debug += 1
+        for row in map:
+            row.pop()
+        i += 1
+    '''    
+    map_it = map.copy()
+    it = 0
+    empty = True
     while it < len(map_it[0]):
+        debug = 0
         for row in reversed(map_it):
             if row[it] == "#":
                 empty = False
@@ -272,10 +293,10 @@ def trim(map):
             for row in map: row.pop()
             it += 1
         else: break
-
-    for row in map:
-        row.insert(0,'.')
-        row.append('.')
+    '''
+    #for row in map:
+        #row.insert(0,'.')
+        #row.append('.')
     
 
 #-----------------------------------------------------
@@ -341,8 +362,9 @@ for y, row in enumerate(visual_map):
 trim (expanded_map)
 print_visual(expanded_map)
 #print(f"size: x:{len(expanded_map[0])}, y:{len(expanded_map)}")
-purge(200, 0, expanded_map)
-#print_visual(expanded_map)
+purge(50, 0, expanded_map)
+
+print_visual(expanded_map)
 
 answer = 0
 for row in expanded_map:
