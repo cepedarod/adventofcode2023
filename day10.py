@@ -386,6 +386,10 @@ purge(len(expanded_map[0])- 50, 0, expanded_map)
 #purge(50, len(expanded_map)-1, expanded_map)
 purge(len(expanded_map[0])- 50, len(expanded_map)-1, expanded_map)
 
+for i, point in enumerate(expanded_map[0]):
+    if point == '.' or point == 'x':
+        purge(i, 0, expanded_map)
+
 
 print_visual(expanded_map)
 
