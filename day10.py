@@ -1,13 +1,13 @@
 #!/usr/bin/python3
 # Day 10 Puzzle
-
+#-----------------------------------------------------
+# Imports
+#-----------------------------------------------------
+import sys
+sys.setrecursionlimit(45000)   # Needed to facilitate recursion depth leveraged for part 2
 #-----------------------------------------------------
 # Read Input
 #-----------------------------------------------------
-import sys
-sys.setrecursionlimit(45000)
-
-
 input_file = "input.txt"
 #input_file = "test.txt"
 with open(input_file, 'r') as f:
@@ -16,11 +16,8 @@ with open(input_file, 'r') as f:
 #-----------------------------------------------------
 # Function
 #-----------------------------------------------------
-def make_ints(list):
-    new_list = []
-    for x in list: new_list.append(int(x))
-    return new_list
-
+# determines what 2 pipes are connected to the start point.
+# Function returns a dict with the cardinal direction the S is to the adjacent pipe and the pipes xy coordinates
 def find_endpoints(map, start_xy, max_x, max_y):
     x = start_xy[0]
     y = start_xy[1]
@@ -37,6 +34,7 @@ def find_endpoints(map, start_xy, max_x, max_y):
 
     return viable_connectors
 
+# determine what type of pipe the S is
 def start_shape (viable_connectors):
     if 'n' in viable_connectors and 's' in viable_connectors: return '|'
     elif 'e' in viable_connectors and 'w' in viable_connectors: return '-'
@@ -45,7 +43,7 @@ def start_shape (viable_connectors):
     elif 's' in viable_connectors and 'w' in viable_connectors: return 'L'
     elif 's' in viable_connectors and 'e' in viable_connectors: return 'J'
     
-
+# Make map that only shows the actual characted for the pipe. converts everything else to a '.'
 def make_visual(map, v_map, x_start, y_start, origin):
     x = x_start
     y = y_start
@@ -111,17 +109,19 @@ def make_visual(map, v_map, x_start, y_start, origin):
         
     return new_map
 
+# prints map
 def print_visual(visual_map):
     for row in visual_map:
         line = ''
         for point in row: line += point
         print(line)
 
+# determines length of pipe loop
 def loop_length(map, x_start, y_start, origin):
     x = x_start
     y = y_start
     node = map[y][x]
-    length = 1
+    length = 1          # Account for S
     
     while node != 'S':
         length += 1
@@ -180,6 +180,8 @@ def loop_length(map, x_start, y_start, origin):
         
     return length
 
+# represents original carcters as 3 '#' caracters in a 3x3 grid
+# Converts map into a 9x bigger map that has real shape representation
 def convert(top_left_x, top_left_y, bigger_map, point):
     x = top_left_x
     y = top_left_y
@@ -210,6 +212,8 @@ def convert(top_left_x, top_left_y, bigger_map, point):
     elif point == ".":
         bigger_map[y+1][x+1] = "x"
 
+# recursively deletes any points that can be reached from the current point
+# if started from outside loop will delete all points not inside pipe loop
 def purge(x, y, map):
     if map[y][x] != "#" and map[y][x] != " "  :
         map[y][x] = ' '
@@ -221,22 +225,18 @@ def purge(x, y, map):
 
     return
 
+# reduces map size by getting rid of empty fringe lines
+# needed to reduce load on recursion
 def trim(map):
     map_it = map.copy()
 
     for row in map_it:
         if "#" not in row: map.pop(0)
-        else:
-            #buffer = ["."] * len(row) 
-            #map.insert(0, buffer)
-            break
+        else: break
 
     for row in reversed(map_it):
         if "#" not in row: map.pop()
-        else: 
-            #buffer = ["."] * len(row)
-            #map.append(buffer)
-            break
+        else: break
 
     map_it = map.copy()
     it = 0
@@ -257,8 +257,6 @@ def trim(map):
             row.pop(0)
         i += 1
 
-    #print(f"Trimmed {debug} columns on the left")
-
     map_it = map.copy()
     it = 0
     empty = True
@@ -278,32 +276,12 @@ def trim(map):
         for row in map:
             row.pop()
         i += 1
-    '''    
-    map_it = map.copy()
-    it = 0
-    empty = True
-    while it < len(map_it[0]):
-        debug = 0
-        for row in reversed(map_it):
-            if row[it] == "#":
-                empty = False
-                break
-        
-        if empty:
-            for row in map: row.pop()
-            it += 1
-        else: break
-    '''
-    #for row in map:
-        #row.insert(0,'.')
-        #row.append('.')
-    
 
 #-----------------------------------------------------
 # Part 1
 #-----------------------------------------------------
-map = []
-visual_map = []
+map = []            # OG Values
+visual_map = []     # Cleaned up values
 for line in lines:
     map.append(list(line))
     v_line = ['.'] * len(list(line))
@@ -317,15 +295,16 @@ S_shape = ''
 for y, row in enumerate(map):
     for x, point in enumerate(row):
         if point == 'S':
-            start_xy = (x,y)
-            viable_connectors = find_endpoints(map, start_xy, max_x, max_y)
+            start_xy = (x,y)                                                    # Location of S
+            viable_connectors = find_endpoints(map, start_xy, max_x, max_y)     # Determine x_y and shape of connection points
             visual_map[y][x] = 'S'
-            S_shape = start_shape (viable_connectors)
+            S_shape = start_shape (viable_connectors)                           # Replace S with real shape
             break
     
     if start_xy: break
 
-origin = list(viable_connectors.keys())[0]
+# Pick coordinates of one of the pipes connected to S and measure length of loop
+origin = list(viable_connectors.keys())[0]  
 total_length = loop_length(map, viable_connectors[origin][0], viable_connectors[origin][1], origin)
 
 print("Answer Part 1: ", total_length / 2)
@@ -333,13 +312,13 @@ print("Answer Part 1: ", total_length / 2)
 #-----------------------------------------------------
 # Part 2
 #-----------------------------------------------------
-
 visual_map = make_visual(map, visual_map, viable_connectors[origin][0], viable_connectors[origin][1], origin)
-#print_visual(visual_map)
+#print_visual(visual_map)       # Debug
 
 visual_map[start_xy[1]][start_xy[0]] = S_shape
-#print_visual(visual_map)
+#print_visual(visual_map)       # Debug
 
+# Make map 9x size of original to acommodate better shape definition
 expanded_map = []
 for row in visual_map:
     expanded_row = ["."] * len(row) * 3
@@ -349,19 +328,20 @@ for row in visual_map:
     expanded_map.append(expanded_row2)
     expanded_map.append(expanded_row3)
  
+ # represent loop in bigger map using '#'
 expanded_y = 0
 expanded_x = 0
 for y, row in enumerate(visual_map):
     for x, point in enumerate(row):
         convert(expanded_x, expanded_y, expanded_map, point)
         expanded_x += 3
-    
     expanded_x = 0 
     expanded_y += 3
 
-trim (expanded_map)
-#print_visual(expanded_map)
-#print(f"size: x:{len(expanded_map[0])}, y:{len(expanded_map)}")
+trim (expanded_map)                 # Get rid of empty space in edges
+#print_visual(expanded_map)         # Debug
+
+# Run purge funcition in stages to avoid crashing from excessive recursion
 checkpoint_found = False
 for i, line in enumerate(expanded_map):
     if checkpoint_found == True and line[0] != '#':
@@ -380,37 +360,19 @@ for i, line in enumerate(expanded_map):
         checkpoint_found = True
         purge(0, i-1, expanded_map)
 
-
-#purge(50, 0, expanded_map)
 purge(len(expanded_map[0])- 50, 0, expanded_map)
-#purge(50, len(expanded_map)-1, expanded_map)
 purge(len(expanded_map[0])- 50, len(expanded_map)-1, expanded_map)
 
 for i, point in enumerate(expanded_map[0]):
     if point == '.' or point == 'x':
         purge(i, 0, expanded_map)
 
+print_visual(expanded_map)      # Print map cuz why not
 
-print_visual(expanded_map)
-
+# After purge count remaining points inside loop
 answer = 0
 for row in expanded_map:
     for point in row:
         if point == "x": answer += 1
 
-print(answer)
-
-output = []
-for line in expanded_map:
-    l = ''
-    for point in line:
-        l += point
-    output.append(l)
-
-file = open('output_day10.txt','w')
-file.writelines(output)
-file.close()
-
-
-
-
+print("Part 2 Answer: ", answer)
