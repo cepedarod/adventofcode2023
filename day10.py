@@ -400,6 +400,17 @@ for row in expanded_map:
 
 print(answer)
 
+output = []
+for line in expanded_map:
+    l = ''
+    for point in line:
+        l += point
+    output.append(l)
+
+file = open('output_day10.txt','w')
+file.writelines(output)
+file.close()
+
 
 
 
