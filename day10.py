@@ -241,16 +241,23 @@ def trim(map):
     map_it = map.copy()
     it = 0
     empty = True
-    while it < len(map_it[0]):
-        for row in map_it:
-            if row[it] == "#":
-                empty = False
+    debug = 0
+    found_edge = False
+    while not found_edge:
+        for row in map:
+            if row[it] == '#':
+                found_edge = True 
                 break
-        
-        if empty:
-            for row in map: row.pop(0)
-            it += 1
-        else: break
+        if not found_edge: it+=1
+
+    i = 0
+    while i < it:
+        debug += 1
+        for row in map:
+            row.pop(0)
+        i += 1
+
+    #print(f"Trimmed {debug} columns on the left")
 
     map_it = map.copy()
     it = 0
@@ -300,7 +307,7 @@ for y, row in enumerate(map):
 origin = list(viable_connectors.keys())[0]
 total_length = loop_length(map, viable_connectors[origin][0], viable_connectors[origin][1], origin)
 
-print("Answer Par 1: ", total_length / 2)
+print("Answer Part 1: ", total_length / 2)
 
 #-----------------------------------------------------
 # Part 2
@@ -331,10 +338,9 @@ for y, row in enumerate(visual_map):
     expanded_x = 0 
     expanded_y += 3
 
-#print_visual(expanded_map)
 trim (expanded_map)
 print_visual(expanded_map)
-print(f"size: x:{len(expanded_map[0])}, y:{len(expanded_map)}")
+#print(f"size: x:{len(expanded_map[0])}, y:{len(expanded_map)}")
 purge(200, 0, expanded_map)
 #print_visual(expanded_map)
 
