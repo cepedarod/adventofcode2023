@@ -1,11 +1,11 @@
 #!/usr/bin/python3
-# Day 9 Puzzle
+# Day 10 Puzzle
 
 #-----------------------------------------------------
 # Read Input
 #-----------------------------------------------------
 import sys
-sys.setrecursionlimit(2930)
+sys.setrecursionlimit(45000)
 
 
 input_file = "input.txt"
@@ -222,17 +222,23 @@ def purge(x, y, map):
     return
 
 def trim(map):
-    map_it = map
+    map_it = map.copy()
 
     for row in map_it:
         if "#" not in row: map.pop(0)
-        else: break
+        else:
+            buffer = ["."] * len(row) 
+            map.insert(0, buffer)
+            break
 
     for row in reversed(map_it):
         if "#" not in row: map.pop()
-        else: break
+        else: 
+            buffer = ["."] * len(row)
+            map.append(buffer)
+            break
 
-    map_it = map
+    map_it = map.copy()
     it = 0
     empty = True
     while it < len(map_it[0]):
@@ -246,7 +252,7 @@ def trim(map):
             it += 1
         else: break
 
-    map_it = map
+    map_it = map.copy()
     it = 0
     empty = True
     while it < len(map_it[0]):
@@ -259,6 +265,10 @@ def trim(map):
             for row in map: row.pop()
             it += 1
         else: break
+
+    for row in map:
+        row.insert(0,'.')
+        row.append('.')
     
 
 #-----------------------------------------------------
@@ -322,7 +332,7 @@ for y, row in enumerate(visual_map):
     expanded_y += 3
 
 #print_visual(expanded_map)
-#trim (expanded_map)
+trim (expanded_map)
 print_visual(expanded_map)
 print(f"size: x:{len(expanded_map[0])}, y:{len(expanded_map)}")
 purge(200, 0, expanded_map)
