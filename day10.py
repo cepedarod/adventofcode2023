@@ -371,12 +371,20 @@ for i, line in enumerate(expanded_map):
         checkpoint_found = True
         purge(0, i-1, expanded_map)
 
+checkpoint_found = False
+for i, line in enumerate(expanded_map):
+    if checkpoint_found == True and line[0] != '#':
+        purge(0, i, expanded_map)
+    
+    elif checkpoint_found == False and line[0] == '#':
+        checkpoint_found = True
+        purge(0, i-1, expanded_map)
 
 
 #purge(50, 0, expanded_map)
-#purge(len(expanded_map[0])- 50, 0, expanded_map)
+purge(len(expanded_map[0])- 50, 0, expanded_map)
 #purge(50, len(expanded_map)-1, expanded_map)
-#purge(len(expanded_map[0])- 50, len(expanded_map)-1, expanded_map)
+purge(len(expanded_map[0])- 50, len(expanded_map)-1, expanded_map)
 
 
 print_visual(expanded_map)
