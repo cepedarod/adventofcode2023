@@ -19,7 +19,7 @@ def print_array(array):
             l += point
         print(l)
 
-def sum_points(sideways_array):
+def sum_points_old(sideways_array):
     total = 0
     for column in sideways_array:
         for i, point in enumerate(column):
@@ -28,15 +28,12 @@ def sum_points(sideways_array):
         
     return total
 
-def sum_points2(array):
+def sum_points(array):
     total = 0
     for i,row in enumerate(array):
         for point in row:
             if point == "O": total+= (len(array) - i)
 
-    return total
-
-        
     return total
 
 def flip_clockwise(array):
@@ -62,9 +59,9 @@ def tumble_north(array):
         new_array.append(new_col)
         col_it += 1
     
+    new_array = correct_orientation(new_array)
     return new_array
 
-    current_array = flip_clockwise(current_array)
 def spin_cycle(array):
     current_array = array.copy()
     current_array = tumble_north(current_array)
@@ -107,37 +104,24 @@ array = []
 for line in lines:
     array.append(list(line))
 
-
-col_it = 0
-new_array = []
-while col_it < len(array[0]):
-    new_col = []
-    for y, row in enumerate(array):
-        if row[col_it] == "O": new_col.append("O")
-        elif row[col_it] == "#":
-            sequence = ["."] * (y - len(new_col))
-            sequence.append("#")
-            new_col.extend(sequence)
-
-    missing_chunk = ["."] * (len(array) - len(new_col))
-    new_col.extend(missing_chunk)
-    new_array.append(new_col)
-    col_it += 1
+'''
+new_array = array.copy()
+new_array = tumble_north(new_array)
 
 #new_array = correct_orientation(new_array)
 #print_array(new_array)
-print(sum_points(new_array))
-
+print("Answer Part 1: ", sum_points(new_array))
+'''
 #-----------------------------------------------------
 # Part 2
 #-----------------------------------------------------
 known_array_configs = {}
 it = 0
-current_array = array
+current_array = array.copy()
 remaining_tumbles = 1000000000
 found_loop = False
+
 while it < remaining_tumbles:
-    #previous_form = current_array.copy()
     current_array = spin_cycle(current_array)
     array_hash = array_to_string(current_array)
     
@@ -151,13 +135,8 @@ while it < remaining_tumbles:
         known_array_configs[array_hash] = it
         #print_array(current_array)
         #print("------------------")
-    #elif found_loop == True:
-        #print("-----FINAL STRETCH--------")
-        #print_array(current_array)
-        #print("------------------")
-
-
 
 #print_array(current_array)
-print(sum_points2(current_array))
+debug = 0
+print("Answer Part 2: ", sum_points(current_array))
 
